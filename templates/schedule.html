@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}5051 Fauntleroy — 3-Week Look Ahead{% endblock %}
+
+{% block content %}
+<!-- Editor toolbar (only visible to logged-in editors) -->
+{% if is_editor %}
+<div class="editor-toolbar">
+    <button class="btn btn-sm btn-primary" onclick="showAddWeekModal()">+ Add Week</button>
+    <button class="btn btn-sm btn-outline" onclick="showAddColumnModal()">+ Add Column</button>
+    <button class="btn btn-sm btn-outline" onclick="toggleChangelog()">📜 Change Log</button>
+</div>
+{% endif %}
+
+<!-- Schedule grid — rendered by JavaScript -->
+<div id="schedule-container"></div>
+
+<!-- Change log panel (hidden by default) -->
+<div id="changelog-panel" class="changelog-panel hidden">
+    <div class="changelog-header">
+        <h3>Change Log</h3>
+        <button class="btn btn-sm btn-outline" onclick="toggleChangelog()">✕</button>
+    </div>
+    <div id="changelog-entries"></div>
+</div>
+
+<!-- Add Week modal -->
+<div id="add-week-modal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Add Week</h3>
+        <div class="form-group">
+            <label for="week-label">Week Label</label>
+            <input type="text" id="week-label" placeholder='e.g. "Week 5: 4/13/26"'>
+        </div>
+        <div class="form-group">
+            <label for="week-start">Start Date</label>
+            <input type="date" id="week-start">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal('add-week-modal')">Cancel</button>
+            <button class="btn btn-primary" onclick="addWeek()">Add</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Column modal -->
+<div id="add-column-modal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Add Column</h3>
+        <div class="form-group">
+            <label for="column-name">Column Name</label>
+            <input type="text" id="column-name" placeholder="e.g. Notes">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal('add-column-modal')">Cancel</button>
+            <button class="btn btn-primary" onclick="addColumn()">Add</button>
+        </div>
+    </div>
+</div>
+
+<!-- Pass editor status to JS -->
+<script>
+    const IS_EDITOR = {{ 'true' if is_editor else 'false' }};
+</script>
+<script src="{{ url_for('static', filename='js/schedule.js') }}"></script>
+{% endblock %}

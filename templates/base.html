@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="5051 Fauntleroy — 3-Week Look Ahead Schedule">
+    <title>{% block title %}5051 Schedule{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-left">
+            <h1 class="app-title">📋 5051 Fauntleroy</h1>
+            <span class="app-subtitle">3-Week Look Ahead</span>
+        </div>
+        <div class="topbar-right">
+            {% if user_name %}
+                <span class="user-badge">{{ user_name }}</span>
+                <a href="/logout" class="btn btn-sm btn-outline">Log Out</a>
+            {% else %}
+                <a href="/login" class="btn btn-sm btn-primary">Log In to Edit</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
