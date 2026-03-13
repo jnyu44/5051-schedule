@@ -71,6 +71,7 @@ def update_cell():
     value = data.get("value", "")
 
     cell = Cell.query.filter_by(row_id=row_id, column_id=column_id).first()
+    old_value = ""
     if not cell:
         cell = Cell(row_id=row_id, column_id=column_id, value=value)
         db.session.add(cell)
@@ -80,7 +81,7 @@ def update_cell():
 
     col = Col.query.get(column_id)
     col_name = col.name if col else "?"
-    _log_change("cell_edit", f"Row {row_id}, {col_name}: '{old_value if cell.id else ''}' → '{value}'")
+    _log_change("cell_edit", f"Row {row_id}, {col_name}: '{old_value}' -> '{value}'")
 
     db.session.commit()
     return jsonify({"ok": True})

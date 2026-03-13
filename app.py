@@ -4,7 +4,7 @@
 Creates the Flask app, registers blueprints, initializes the database,
 and seeds the 3 editor accounts on first run.
 """
-from flask import Flask
+from flask import Flask, g
 
 from config import SECRET_KEY, DATABASE_URL, HOST, PORT, DEBUG
 from models import db, User, Column as Col
@@ -19,6 +19,11 @@ app = Flask(__name__)
 app.secret_key = SECRET_KEY
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+    "connect_args": {"connect_timeout": 10} if "postgresql" in DATABASE_URL else {},
+}
 
 db.init_app(app)
 
@@ -48,6 +53,8 @@ SEED_USERS = [
 
 DEFAULT_PASSWORD = "team5051"
 
+_db_initialized = False
+
 
 def seed_database():
     """Create default columns and editor accounts if they don't exist."""
@@ -66,9 +73,14 @@ def seed_database():
     db.session.commit()
 
 
-with app.app_context():
-    db.create_all()
-    seed_database()
+@app.before_request
+def init_db():
+    """Initialize the database on the first request (not at import time)."""
+    global _db_initialized
+    if not _db_initialized:
+        db.create_all()
+        seed_database()
+        _db_initialized = True
 
 
 # ---------------------------------------------------------------------------
@@ -76,3 +88,4 @@ with app.app_context():
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(host=HOST, port=PORT, debug=DEBUG)
+
